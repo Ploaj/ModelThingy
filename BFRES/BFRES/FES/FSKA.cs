@@ -37,15 +37,24 @@ namespace BFRES
             Text = f.readString(f.readOffset(), -1);
             f.skip(4); //pointer to endof string table
             int unk1 = f.readInt(); // unknown 0x1200?
-            frameCount = f.readInt();
-            boneCount = f.readShort();
-            f.skip(2); // dunno 
+            if(BFRES.low < 4)
+            {
+                frameCount = f.readShort();
+                boneCount = f.readShort();
+                f.skip(4); // unk2
+            }else
+            {
+                frameCount = f.readInt();
+                boneCount = f.readShort();
+                f.skip(2); // dunno 
+            }
             int unk2 = f.readInt(); // dunno
             int unkOff = f.readOffset(); // and offset to seemingly nothing
             int headerOffset = f.readOffset(); // offset to start of base values
                                                //Console.WriteLine(Text + " " + unk1 + " " + unk2 + " " + unkOff.ToString("x") + " " + headerOffset.ToString("x"));
 
             f.seek(headerOffset);
+            Console.WriteLine(boneCount + " " + f.pos().ToString("x"));
             for (int i = 0; i < boneCount - 1; i++)
             {
                 Nodes.Add(new FSKANode(f));
@@ -165,7 +174,7 @@ namespace BFRES
                     frameCount = f.readFloat(),
                     scale = f.readFloat(),
                     init = f.readFloat(),
-                    unkf3 = f.readFloat(),
+                    unkf3 = (BFRES.low < 4) ? 0 : f.readFloat(),
                     offtolastKeys = f.readOffset(),
                     offtolastData = f.readOffset()
                 });

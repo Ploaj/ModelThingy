@@ -37,11 +37,15 @@ vec4 skin()
     ivec4 b = ivec4(_i0);
     vec4 pos = vec4(_p0, 1.0);
 
-    vec4 trans = bones[bonematch[b.x]] * pos * _w0.x;
+    vec4 trans = pos;
+
+    if(bonematch[0] != -1){
+    trans = bones[bonematch[b.x]] * pos * _w0.x;
     trans += bones[bonematch[b.y]] * pos *_w0.y;
     trans += bones[bonematch[b.z]] * pos *_w0.z;
     if(_w0.w < 1)
         trans += bones[bonematch[b.w]] * pos *_w0.w;
+    }
         
     return trans;
 }
@@ -246,7 +250,7 @@ gl_FragData[0] = texture2D(tex, u0);
             }
 
             f.seek(FVIS0Offset);
-            IndexGroup fvis0Group = new IndexGroup(f);
+            //IndexGroup fvis0Group = new IndexGroup(f);
             TreeNode vis0Group = new TreeNode();
             vis0Group.Text = "FVIS0s";
             vis0Group.ImageKey = "folder";
@@ -255,7 +259,7 @@ gl_FragData[0] = texture2D(tex, u0);
             for (int i = 0; i < FVIS0Count; i++)
             {
                 //f.seek(fvis0Group.dataOffsets[i]);
-                vis0Group.Nodes.Add(new TreeNode() { Text = fvis0Group.names[i] });
+                //vis0Group.Nodes.Add(new TreeNode() { Text = fvis0Group.names[i] });
             }
             
             f.seek(FVIS1Offset);

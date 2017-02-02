@@ -88,7 +88,10 @@ namespace BFRES
             Matrix4[] f = skel.getBoneTransforms();
             int[] bind = skel.bindId;
             GL.UniformMatrix4(BFRES.shader.getAttribute("bones"), f.Length, false, ref f[0].Row0.X);
-            GL.Uniform1(BFRES.shader.getAttribute("bonematch"), bind.Length, ref bind[0]);
+            if(bind.Length>0)
+                GL.Uniform1(BFRES.shader.getAttribute("bonematch"), bind.Length, ref bind[0]);
+            else
+                GL.Uniform1(BFRES.shader.getAttribute("bonematch"), bind.Length, new int[]{ -1});
 
             BFRES.shader.enableAttrib();
             foreach (FSHP shape in shapes)
@@ -105,7 +108,7 @@ namespace BFRES
                         {
                             if(no.Text.Equals(tex))
                             {
-                                Console.WriteLine("Binding " + no.Text);
+                                //Console.WriteLine("Binding " + no.Text);
                                 GL.ActiveTexture(TextureUnit.Texture0);
                                 GL.BindTexture(TextureTarget.Texture2D, ((FTEX)no).tex.id);
                                 GL.Uniform1(BFRES.shader.getAttribute("tex"), 0);
@@ -341,13 +344,15 @@ namespace BFRES
         {
             GL.GenBuffers(1, out gl_vbo);
 
+            Console.WriteLine("Prerender start");
+
             for (int i = 0; i < vertCount; i++)
             {
                 TempVertex vert = new TempVertex();
 
                 foreach (BFRESAttribute att in attributes)
                 {
-                    FileData d = new FileData(new FileData(buffers[att.bufferIndex].data).getSection(0, -1));
+                    FileData d = new FileData(buffers[att.bufferIndex].data);
                     d.seek(att.bufferOffset + i * buffers[att.bufferIndex].stride);
                     switch (att.format)
                     {
@@ -424,6 +429,7 @@ namespace BFRES
                     w1 = vert.i1, w2 = vert.i2, w3 = vert.i3, w4 = vert.i4,
                 });
             }
+            Console.WriteLine("Prerender end");
 
             GL.BindBuffer(BufferTarget.ArrayBuffer, gl_vbo);
             GL.BufferData<Vertex>(BufferTarget.ArrayBuffer, (IntPtr)(data.Count * Vertex.Stride), data.ToArray(), BufferUsageHint.StaticDraw);

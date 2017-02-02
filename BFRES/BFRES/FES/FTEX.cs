@@ -93,7 +93,7 @@ namespace BFRES
                     tex.utype = OpenTK.Graphics.OpenGL.PixelFormat.Rgba;
                     break;
                 default:
-                    throw new Exception("Unknown format");
+                    return;
             }
 
             tex.load();
